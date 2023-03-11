@@ -83,4 +83,31 @@ describe('TSet', () => {
     expect(s.has(t3)).to.be.true;
     expect(s.size).to.equal(2);
   });
+
+  it('Can be cloned and the clone can be updated without affecting the original', () => {
+    const s = new TSet<Thing>([]);
+
+    const t1 = new Thing('one');
+    const t2 = new Thing('two');
+    const t3 = new Thing('three');
+    const t4 = new Thing('four');
+
+    s.add(t1);
+    s.add(t2);
+    s.add(t3);
+
+    const c = s.clone();
+    c.add(t4);
+
+    expect(s.has(t1)).to.be.true;
+    expect(s.has(t2)).to.be.true;
+    expect(s.has(t3)).to.be.true;
+    expect(s.size).to.equal(3);
+
+    expect(c.has(t1)).to.be.true;
+    expect(c.has(t2)).to.be.true;
+    expect(c.has(t3)).to.be.true;
+    expect(c.has(t4)).to.be.true;
+    expect(c.size).to.equal(4);
+  });
 });

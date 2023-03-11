@@ -1581,3 +1581,4 @@ HQDM.relate(
   utcMillisecondsClass,
   new Thing(HQDM_NS + HQDM_UTC_MS_CLASS_NAME)
 );
+
