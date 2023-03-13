@@ -22,6 +22,15 @@ export class TSet<T extends Eq<T>> {
   }
 
   /**
+   * Returns a new TSet that is a copy of this TSet.
+   *
+   * @returns A new TSet that is a copy of this TSet.
+   */
+  clone(): TSet<T> {
+    return this.map((t) => t);
+  }
+
+  /**
    * Adds a new T to the set.
    *
    * @param t The T to add.
