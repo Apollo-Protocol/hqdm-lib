@@ -527,7 +527,7 @@ export class HQDMModel {
    * @returns the classes that the thing is a member of.
    */
   memberOf(t: Thing): TSet<Thing> {
-    return this.things.get(t.id)?.get(MEMBER_OF) ?? EMPTY;
+    return this.getRelated(t, MEMBER_OF);
   }
 
   /**
@@ -537,7 +537,7 @@ export class HQDMModel {
    * @returns the kinds that the thing is a member of.
    */
   memberOfKind(t: Thing): TSet<Thing> {
-    return this.things.get(t.id)?.get(MEMBER_OF_KIND) ?? EMPTY;
+    return this.getRelated(t, MEMBER_OF_KIND);
   }
 
   /**
@@ -548,8 +548,7 @@ export class HQDMModel {
    * @returns true if the thing is a member of the kind.
    */
   isKindOf(t: Thing, k: Thing): boolean {
-    return this.things.get(t.id)?.get(MEMBER_OF_KIND)
-      ?.has(k) ?? false;
+    return this.getRelated(t, MEMBER_OF_KIND).has(k);
   }
 
   /**
@@ -560,8 +559,7 @@ export class HQDMModel {
    * @returns true if the thing is a member of the class.
    */
   isMemberOf(t: Thing, c: Thing): boolean {
-    return this.things.get(t.id)?.get(MEMBER_OF)
-      ?.has(c) ?? false;
+    return this.getRelated(t, MEMBER_OF).has(c);
   }
 
   /**
@@ -608,6 +606,20 @@ export class HQDMModel {
   related(predicate: string, first: Thing, second: Thing): boolean {
     const pairs = this.relations.get(predicate);
     return !pairs ? false : pairs.has(new Pair(first, second));
+  }
+
+  /**
+   * Fetch all the Things related to this Thing by a predicate.
+   *
+   * @param t the first thing in the relationship.
+   * @param predicate the predicate to search for.
+   * @returns a TSet of the results.
+   */
+  /* XXX This returns a 'live' result. Should we copy it instead? In
+   * which case we would probably want a non-copied method for internal
+   * use. */
+  getRelated(t: Thing, predicate: string): TSet<Thing> {
+    return this.things.get(t.id)?.get(predicate) ?? EMPTY;
   }
 
   /**
