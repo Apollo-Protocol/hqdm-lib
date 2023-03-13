@@ -527,7 +527,7 @@ export class HQDMModel {
    * @returns the classes that the thing is a member of.
    */
   memberOf(t: Thing): TSet<Thing> {
-    return this.getRelated(t, MEMBER_OF);
+    return this.getRelated(t, MEMBER_OF).clone();
   }
 
   /**
@@ -537,7 +537,7 @@ export class HQDMModel {
    * @returns the kinds that the thing is a member of.
    */
   memberOfKind(t: Thing): TSet<Thing> {
-    return this.getRelated(t, MEMBER_OF_KIND);
+    return this.getRelated(t, MEMBER_OF_KIND).clone();
   }
 
   /**
