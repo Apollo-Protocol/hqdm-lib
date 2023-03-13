@@ -1,6 +1,6 @@
 /**
  * TSet and Eq are used to get around the limitations of TypeScript's built-in Set
- * which doesn't have well defined equality semantics, or  at least the semantics
+ * which doesn't have well defined equality semantics, or at least the semantics
  * needed for this application
  */
 
@@ -14,11 +14,20 @@ export interface Eq<T> {
 /**
  * TSet is a set of Ts that implements the Eq interface.
  */
-export class TSet<T extends Eq<T>> {
+export class TSet<T extends Eq<T>> implements Iterable<T> {
   private _data: T[] = [];
 
   constructor(ts: T[]) {
     ts.forEach((t) => this.add(t));
+  }
+
+  /**
+   * Returns an iterator for the underlying data.
+   *
+   * @returns An iterator for the underlying data.
+   */
+  [Symbol.iterator](): Iterator<T, any, undefined> {
+    return this._data[Symbol.iterator]();
   }
 
   /**
