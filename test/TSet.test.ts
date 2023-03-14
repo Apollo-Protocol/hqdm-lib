@@ -83,4 +83,17 @@ describe('TSet', () => {
     expect(s.has(t3)).to.be.true;
     expect(s.size).to.equal(2);
   });
+
+  it('Can iterate over a TSet', () => {
+    const s = new TSet<Thing>([
+      new Thing('one'),
+      new Thing('two'),
+      new Thing('three'),
+    ]);
+
+    for(const t of s) {
+      expect(s.has(t)).to.be.true;
+    }
+  });
+
 });

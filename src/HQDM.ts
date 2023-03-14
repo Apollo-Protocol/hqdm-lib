@@ -36,7 +36,7 @@ export const HQDM_UTC_POINT_IN_TIME_NS = uuidv5(
   HQDM_UTC_MS_CLASS_NAME,
   HQDM_UUID_NS
 );
-// Used when there is nothing to return rather than using null or undefined.
+// Used when there is nothing to return rather than using null or undefined. Has to be cloned since TSet is mutable.
 export const EMPTY: TSet<Thing> = new TSet([]);
 
 /**
@@ -114,14 +114,14 @@ export class HQDMModel {
    * @kind the type of object to find.
    * @returns the objects if found, an empty array otherwise.
    */
-  findByType(kind: Thing): Iterable<Thing> {
+  findByType(kind: Thing): TSet<Thing> {
     const result: Thing[] = [];
     this.relations.get(RDF_TYPE)?.forEach((p) => {
       if (p.r.equal(kind)) {
         result.push(p.l);
       }
     });
-    return result;
+    return new TSet(result);
   }
 
   /**
@@ -144,7 +144,7 @@ export class HQDMModel {
    * @param communityName the community to get the signs for.
    * @returns the signs for the thing.
    */
-  getIdentifications(t: Thing, communityName: Thing): Iterable<SpatioTemporalExtent> {
+  getIdentifications(t: Thing, communityName: Thing): TSet<SpatioTemporalExtent> {
     return this.getSignsOfKind(t, communityName, identification);
   }
 
@@ -154,14 +154,14 @@ export class HQDMModel {
    * @param t should be an activity Thing.
    * @returns the participants for the activity.
    */
-  getParticipants(t: Thing): Iterable<Thing> {
+  getParticipants(t: Thing): TSet<Thing> {
     const result: Thing[] = [];
     this.relations
       .get(PARTICIPANT_IN)
       ?.filter((p) => p.r.equal(t))
       ?.map((p) => p.l)
       ?.forEach((p) => result.push(p));
-    return result;
+    return new TSet(result);
   }
 
   /**
@@ -181,7 +181,7 @@ export class HQDMModel {
    * @param communityName the community to get the descriptions for.
    * @returns the descriptions for the thing.
    */
-  getDescriptions(t: Thing, communityName: Thing): Iterable<SpatioTemporalExtent> {
+  getDescriptions(t: Thing, communityName: Thing): TSet<SpatioTemporalExtent> {
     return this.getSignsOfKind(t, communityName, description);
   }
 
@@ -191,7 +191,7 @@ export class HQDMModel {
    * @param t the thing to get the roles for.
    * @returns the roles for the thing.
    */
-  getRole(t: Thing): Iterable<Thing> {
+  getRole(t: Thing): TSet<Thing> {
     const result: Thing[] = [];
     this.relations
       .get(MEMBER_OF_KIND)
@@ -199,7 +199,7 @@ export class HQDMModel {
       ?.filter((p) => this.isKindOf(p.r, role))
       ?.map((p) => p.r)
       ?.forEach((p) => result.push(p));
-    return result;
+    return new TSet(result);
   }
 
   /**
@@ -213,7 +213,7 @@ export class HQDMModel {
     t: Thing,
     communityName: Thing,
     kind: Thing
-  ): Iterable<SpatioTemporalExtent> {
+  ): TSet<SpatioTemporalExtent> {
     const result: Thing[] = [];
 
     // Find the community.
@@ -280,7 +280,7 @@ export class HQDMModel {
       }
     }
 
-    return result;
+    return new TSet(result);
   }
 
   /**
@@ -526,7 +526,7 @@ export class HQDMModel {
    * @param t the thing to find the classes for.
    * @returns the classes that the thing is a member of.
    */
-  memberOf(t: Thing): Iterable<Thing> {
+  memberOf(t: Thing): TSet<Thing> {
     return this.getRelated(t, MEMBER_OF);
   }
 
@@ -536,7 +536,7 @@ export class HQDMModel {
    * @param t the thing to find the kinds for.
    * @returns the kinds that the thing is a member of.
    */
-  memberOfKind(t: Thing): Iterable<Thing> {
+  memberOfKind(t: Thing): TSet<Thing> {
     return this.getRelated(t, MEMBER_OF_KIND);
   }
 
@@ -627,8 +627,10 @@ export class HQDMModel {
    * @param predicate the predicate to search for.
    * @returns a TSet of the results.
    */
-  getRelated(t: Thing, predicate: string): Iterable<Thing> {
-    return this.things.get(t.id)?.get(predicate) ?? [];
+  getRelated(t: Thing, predicate: string): TSet<Thing> {
+    return this.things.get(t.id)
+      ?.get(predicate)
+      ?.clone() ?? EMPTY.clone();
   }
 
   /**
