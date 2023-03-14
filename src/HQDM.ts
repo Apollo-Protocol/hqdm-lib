@@ -36,7 +36,7 @@ export const HQDM_UTC_POINT_IN_TIME_NS = uuidv5(
   HQDM_UTC_MS_CLASS_NAME,
   HQDM_UUID_NS
 );
-// Used when there is nothing to return rather than using null or undefined.
+// Used when there is nothing to return rather than using null or undefined. Has to be cloned since TSet is mutable.
 export const EMPTY: TSet<Thing> = new TSet([]);
 
 /**
@@ -114,14 +114,14 @@ export class HQDMModel {
    * @kind the type of object to find.
    * @returns the objects if found, an empty array otherwise.
    */
-  findByType(kind: Thing): Thing[] {
+  findByType(kind: Thing): TSet<Thing> {
     const result: Thing[] = [];
     this.relations.get(RDF_TYPE)?.forEach((p) => {
       if (p.r.equal(kind)) {
         result.push(p.l);
       }
     });
-    return result;
+    return new TSet(result);
   }
 
   /**
@@ -144,7 +144,7 @@ export class HQDMModel {
    * @param communityName the community to get the signs for.
    * @returns the signs for the thing.
    */
-  getIdentifications(t: Thing, communityName: Thing): SpatioTemporalExtent[] {
+  getIdentifications(t: Thing, communityName: Thing): TSet<SpatioTemporalExtent> {
     return this.getSignsOfKind(t, communityName, identification);
   }
 
@@ -154,14 +154,14 @@ export class HQDMModel {
    * @param t should be an activity Thing.
    * @returns the participants for the activity.
    */
-  getParticipants(t: Thing): Thing[] {
+  getParticipants(t: Thing): TSet<Thing> {
     const result: Thing[] = [];
     this.relations
       .get(PARTICIPANT_IN)
       ?.filter((p) => p.r.equal(t))
       ?.map((p) => p.l)
       ?.forEach((p) => result.push(p));
-    return result;
+    return new TSet(result);
   }
 
   /**
@@ -181,7 +181,7 @@ export class HQDMModel {
    * @param communityName the community to get the descriptions for.
    * @returns the descriptions for the thing.
    */
-  getDescriptions(t: Thing, communityName: Thing): SpatioTemporalExtent[] {
+  getDescriptions(t: Thing, communityName: Thing): TSet<SpatioTemporalExtent> {
     return this.getSignsOfKind(t, communityName, description);
   }
 
@@ -191,7 +191,7 @@ export class HQDMModel {
    * @param t the thing to get the roles for.
    * @returns the roles for the thing.
    */
-  getRole(t: Thing): Thing[] {
+  getRole(t: Thing): TSet<Thing> {
     const result: Thing[] = [];
     this.relations
       .get(MEMBER_OF_KIND)
@@ -199,7 +199,7 @@ export class HQDMModel {
       ?.filter((p) => this.isKindOf(p.r, role))
       ?.map((p) => p.r)
       ?.forEach((p) => result.push(p));
-    return result;
+    return new TSet(result);
   }
 
   /**
@@ -213,7 +213,7 @@ export class HQDMModel {
     t: Thing,
     communityName: Thing,
     kind: Thing
-  ): SpatioTemporalExtent[] {
+  ): TSet<SpatioTemporalExtent> {
     const result: Thing[] = [];
 
     // Find the community.
@@ -280,7 +280,7 @@ export class HQDMModel {
       }
     }
 
-    return result;
+    return new TSet(result);
   }
 
   /**
@@ -548,7 +548,7 @@ export class HQDMModel {
    * @returns true if the thing is a member of the kind.
    */
   isKindOf(t: Thing, k: Thing): boolean {
-    return this.getRelated(t, MEMBER_OF_KIND).has(k);
+    return this._getRelated(t, MEMBER_OF_KIND).has(k);
   }
 
   /**
@@ -559,7 +559,7 @@ export class HQDMModel {
    * @returns true if the thing is a member of the class.
    */
   isMemberOf(t: Thing, c: Thing): boolean {
-    return this.getRelated(t, MEMBER_OF).has(c);
+    return this._getRelated(t, MEMBER_OF).has(c);
   }
 
   /**
@@ -610,16 +610,27 @@ export class HQDMModel {
 
   /**
    * Fetch all the Things related to this Thing by a predicate.
+   * This private method returns a TSet so that we can use the TSet.has() method elsewhere.
    *
    * @param t the first thing in the relationship.
    * @param predicate the predicate to search for.
    * @returns a TSet of the results.
    */
-  /* XXX This returns a 'live' result. Should we copy it instead? In
-   * which case we would probably want a non-copied method for internal
-   * use. */
-  getRelated(t: Thing, predicate: string): TSet<Thing> {
+  private _getRelated(t: Thing, predicate: string): TSet<Thing> {
     return this.things.get(t.id)?.get(predicate) ?? EMPTY;
+  }
+
+  /**
+   * Fetch all the Things related to this Thing by a predicate.
+   *
+   * @param t the first thing in the relationship.
+   * @param predicate the predicate to search for.
+   * @returns a TSet of the results.
+   */
+  getRelated(t: Thing, predicate: string): TSet<Thing> {
+    return this.things.get(t.id)
+      ?.get(predicate)
+      ?.clone() ?? EMPTY.clone();
   }
 
   /**

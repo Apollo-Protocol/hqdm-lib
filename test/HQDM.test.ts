@@ -133,6 +133,7 @@ describe('HQDMModel', () => {
 
     expect(model.memberOfKind(stateOfTeacher).size).to.equal(3);
     expect(model.memberOfKind(stateOfStudent).size).to.equal(3);
+
     const ttl = model.save({
       hqdm: 'http://hqdm.com/',
       test: 'http://test.com/',

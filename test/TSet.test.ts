@@ -84,6 +84,18 @@ describe('TSet', () => {
     expect(s.size).to.equal(2);
   });
 
+  it('Can iterate over a TSet', () => {
+    const s = new TSet<Thing>([
+      new Thing('one'),
+      new Thing('two'),
+      new Thing('three'),
+    ]);
+
+    for(const t of s) {
+      expect(s.has(t)).to.be.true;
+    }
+  });
+
   it('Can be cloned and the clone can be updated without affecting the original', () => {
     const s = new TSet<Thing>([]);
 
