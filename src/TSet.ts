@@ -4,6 +4,8 @@
  * needed for this application
  */
 
+import type { Maybe } from './util';
+
 /**
  * Eq is an interface that defines the equality semantics for a type.
  */
@@ -36,7 +38,7 @@ export class TSet<T extends Eq<T>> implements Iterable<T> {
    * @returns A new TSet that is a copy of this TSet.
    */
   clone(): TSet<T> {
-    return this.map((t) => t);
+    return new TSet(this._data);
   }
 
   /**
@@ -93,7 +95,7 @@ export class TSet<T extends Eq<T>> implements Iterable<T> {
    * @param f The predicate function.
    * @returns The first T in the set that satisfies the predicate or undefined.
    */
-  first(f: (r: T) => boolean): T | undefined {
+  first(f: (r: T) => boolean): Maybe<T> {
     for (const t of this._data) {
       const result = f(t);
       if (result) {
@@ -101,6 +103,17 @@ export class TSet<T extends Eq<T>> implements Iterable<T> {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Returns the only T in the set. Returns undefined if the set is
+   * empty. Throws if the set has more than one member.
+   */
+  only(): Maybe<T> {
+    if (this.size > 1) {
+      throw new Error(`TSet.only: set has ${this.size} members`);
+    }
+    return this._data[0];
   }
 
   /**
