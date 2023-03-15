@@ -54,6 +54,7 @@ export const HQDM_NS = 'https://hqdmtop.github.io/hqdm#';
 export const ENTITY_NAME = HQDM_NS + 'data_EntityName';
 export const CONSISTS_OF = HQDM_NS + 'consists_of';
 export const CONSISTS_OF_ = HQDM_NS + 'consists_of_';
+export const PART_OF = HQDM_NS + 'part_of';
 export const PART_OF_BY_CLASS = HQDM_NS + 'part_of_by_class';
 export const REPRESENTS = HQDM_NS + 'represents';
 export const CONSISTS_OF_BY_CLASS = HQDM_NS + 'consists_of_by_class';
@@ -162,6 +163,16 @@ export class HQDMModel {
       ?.map((p) => p.l)
       ?.forEach((p) => result.push(p));
     return new TSet(result);
+  }
+
+  /**
+   * Get the activities this one is part of.
+   *
+   * @param t An activity to get the parent of.
+   * @returns A TSet of the activities this one is part of.
+   */
+  getPartOf(t: Thing): TSet<Thing> {
+    return this.getRelated(t, PART_OF);
   }
 
   /**
@@ -686,6 +697,16 @@ export class HQDMModel {
    */
   addAsTemporalPartOf(part: Thing, whole: Thing): void {
     this.relate(TEMPORAL_PART_OF, part, whole);
+  }
+
+  /**
+   * Add an activity to a parent activity.
+   *
+   * @param part The sub-activity.
+   * @param whole The parent activity.
+   */
+  addPartOf(part: Thing, whole: Thing): void {
+    this.relate(PART_OF, part, whole);
   }
 
   /**
