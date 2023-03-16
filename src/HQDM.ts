@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable max-classes-per-file */
-import { Eq, TSet } from './TSet.js';
+import { Eq, Maybe, TSet } from './TSet.js';
 import * as N3 from 'n3';
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { Readable } from 'readable-stream';
@@ -54,6 +54,7 @@ export const HQDM_NS = 'https://hqdmtop.github.io/hqdm#';
 export const ENTITY_NAME = HQDM_NS + 'data_EntityName';
 export const CONSISTS_OF = HQDM_NS + 'consists_of';
 export const CONSISTS_OF_ = HQDM_NS + 'consists_of_';
+export const PART_OF = HQDM_NS + 'part_of';
 export const PART_OF_BY_CLASS = HQDM_NS + 'part_of_by_class';
 export const REPRESENTS = HQDM_NS + 'represents';
 export const CONSISTS_OF_BY_CLASS = HQDM_NS + 'consists_of_by_class';
@@ -101,7 +102,7 @@ export class HQDMModel {
    * @kind the type of object to find.
    * @returns the object if found, undefined otherwise.
    */
-  findByEntityName(name: string, kind: Thing): Thing | undefined {
+  findByEntityName(name: string, kind: Thing): Maybe<Thing> {
     return this.relations
       .get(ENTITY_NAME)
       ?.filter((p) => this.isKindOf(p.l, kind))
@@ -165,12 +166,22 @@ export class HQDMModel {
   }
 
   /**
+   * Get the activities this one is part of.
+   *
+   * @param t An activity to get the parent of.
+   * @returns A TSet of the activities this one is part of.
+   */
+  getPartOf(t: Thing): TSet<Thing> {
+    return this.getRelated(t, PART_OF);
+  }
+
+  /**
    * If the thing is a temporal part, get the whole.
    *
    * @param t the thing to get the whole for.
    * @returns the whole if the thing is a temporal part, undefined otherwise.
    */
-  getTemporalWhole(t: Thing): Thing | undefined {
+  getTemporalWhole(t: Thing): Maybe<Thing> {
     return this.relations.get(TEMPORAL_PART_OF)?.first((p) => p.l.equal(t))?.r;
   }
 
@@ -689,6 +700,16 @@ export class HQDMModel {
   }
 
   /**
+   * Add an activity to a parent activity.
+   *
+   * @param part The sub-activity.
+   * @param whole The parent activity.
+   */
+  addPartOf(part: Thing, whole: Thing): void {
+    this.relate(PART_OF, part, whole);
+  }
+
+  /**
    * Add a thing to a class.
    *
    * @param t the thing to add to the class.
@@ -734,7 +755,7 @@ export class HQDMModel {
    * @param t the thing to get the beginning event of.
    * @returns the beginning event or undefined.
    */
-  getBeginning(t: Thing): Thing | undefined {
+  getBeginning(t: Thing): Maybe<Thing> {
     return this.things
       .get(t.id)
       ?.get(BEGINNING)
@@ -747,7 +768,7 @@ export class HQDMModel {
    * @param t the thing to get the ending event of.
    * @returns the ending event or undefined.
    */
-  getEnding(t: Thing): Thing | undefined {
+  getEnding(t: Thing): Maybe<Thing> {
     return this.things
       .get(t.id)
       ?.get(ENDING)

@@ -4,6 +4,8 @@
  * needed for this application
  */
 
+export type Maybe<T> = T | undefined;
+
 /**
  * Eq is an interface that defines the equality semantics for a type.
  */
@@ -36,7 +38,7 @@ export class TSet<T extends Eq<T>> implements Iterable<T> {
    * @returns A new TSet that is a copy of this TSet.
    */
   clone(): TSet<T> {
-    return this.map((t) => t);
+    return new TSet(this._data);
   }
 
   /**
@@ -93,7 +95,8 @@ export class TSet<T extends Eq<T>> implements Iterable<T> {
    * @param f The predicate function.
    * @returns The first T in the set that satisfies the predicate or undefined.
    */
-  first(f: (r: T) => boolean): T | undefined {
+  first(f?: (r: T) => boolean): Maybe<T> {
+    f ??= _ => true;
     for (const t of this._data) {
       const result = f(t);
       if (result) {
