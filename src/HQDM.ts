@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable max-classes-per-file */
-import { Eq, TSet } from './TSet.js';
+import { Eq, Maybe, TSet } from './TSet.js';
 import * as N3 from 'n3';
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { Readable } from 'readable-stream';
@@ -102,7 +102,7 @@ export class HQDMModel {
    * @kind the type of object to find.
    * @returns the object if found, undefined otherwise.
    */
-  findByEntityName(name: string, kind: Thing): Thing | undefined {
+  findByEntityName(name: string, kind: Thing): Maybe<Thing> {
     return this.relations
       .get(ENTITY_NAME)
       ?.filter((p) => this.isKindOf(p.l, kind))
@@ -181,7 +181,7 @@ export class HQDMModel {
    * @param t the thing to get the whole for.
    * @returns the whole if the thing is a temporal part, undefined otherwise.
    */
-  getTemporalWhole(t: Thing): Thing | undefined {
+  getTemporalWhole(t: Thing): Maybe<Thing> {
     return this.relations.get(TEMPORAL_PART_OF)?.first((p) => p.l.equal(t))?.r;
   }
 
@@ -755,7 +755,7 @@ export class HQDMModel {
    * @param t the thing to get the beginning event of.
    * @returns the beginning event or undefined.
    */
-  getBeginning(t: Thing): Thing | undefined {
+  getBeginning(t: Thing): Maybe<Thing> {
     return this.things
       .get(t.id)
       ?.get(BEGINNING)
@@ -768,7 +768,7 @@ export class HQDMModel {
    * @param t the thing to get the ending event of.
    * @returns the ending event or undefined.
    */
-  getEnding(t: Thing): Thing | undefined {
+  getEnding(t: Thing): Maybe<Thing> {
     return this.things
       .get(t.id)
       ?.get(ENDING)
