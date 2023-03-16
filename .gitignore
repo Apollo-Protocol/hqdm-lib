@@ -2,6 +2,9 @@ node_modules
 
 .idea
 
+# Vim swap
+*.swp
+
 src/Scratch*
 dist
 .vscode/
