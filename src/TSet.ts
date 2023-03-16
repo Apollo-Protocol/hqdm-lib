@@ -4,7 +4,7 @@
  * needed for this application
  */
 
-import type { Maybe } from './util';
+export type Maybe<T> = T | undefined;
 
 /**
  * Eq is an interface that defines the equality semantics for a type.
