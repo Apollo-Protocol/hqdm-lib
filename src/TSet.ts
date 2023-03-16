@@ -96,9 +96,9 @@ export class TSet<T extends Eq<T>> implements Iterable<T> {
    * @returns The first T in the set that satisfies the predicate or undefined.
    */
   first(f?: (r: T) => boolean): Maybe<T> {
-    f ??= _ => true;
+    const pred = f ?? (() => true);
     for (const t of this._data) {
-      const result = f(t);
+      const result = pred(t);
       if (result) {
         return t;
       }
