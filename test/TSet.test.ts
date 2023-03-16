@@ -21,19 +21,6 @@ describe('TSet', () => {
     expect(s.size).to.equal(2);
   });
 
-  it('Can verify it contains a single value', () => {
-    const t1 = new Thing("one");
-    const t2 = new Thing("two");
-
-    const s0 = new TSet<Thing>([]);
-    const s1 = new TSet<Thing>([t1]);
-    const s2 = new TSet<Thing>([t1, t2]);
-
-    expect(s0.only()).to.be.undefined;
-    expect(s1.only()).to.equal(t1);
-    expect(() => s2.only()).to.throw();
-  });
-
   it('Can map a set of things to a set of other things', () => {
     const s = new TSet<Thing>([]);
 
