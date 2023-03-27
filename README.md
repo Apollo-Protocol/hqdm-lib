@@ -10,7 +10,7 @@ This package heavily is heavily based upon [MagmaCore](https://github.com/gchq/M
 
 ## Getting Started
 
-Install can be done through npm or use the local repo.
+Install can be done through npm or use a local clone from github for the latest copy.
 
 `npm i @apollo-protocol/hqdm-lib`
 
