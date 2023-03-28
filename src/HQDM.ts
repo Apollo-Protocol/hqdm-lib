@@ -144,6 +144,32 @@ export class HQDMModel {
     this.setVersionInfo(HQDM_LIB_NS, HQDM_LIB_VERSION);
   }
 
+  replaceIriPrefix(from: string, to: string) {
+    const doReplace = (str: string) =>
+      str.startsWith(from) ? str.replace(from, to) : str;
+
+    const newThings = new Map<string, Map<string, TSet<Thing>>>();
+    this.things.forEach((preds: Map<string, TSet<Thing>>, first: string) => {
+      const newFirst = doReplace(first);
+      const newPreds = new Map<string, TSet<Thing>>();
+      preds.forEach((seconds: TSet<Thing>, pred: string) =>
+        newPreds.set(doReplace(pred), 
+          seconds.map((t: Thing) => new Thing(doReplace(t.id)))));
+      newThings.set(newFirst, newPreds);
+    });
+    this.things = newThings;
+
+    const newRelations = new Map<string, TSet<Pair<Thing, Thing>>>;
+    this.relations.forEach((pairs: TSet<Pair<Thing, Thing>>, pred: string) => {
+      newRelations.set(doReplace(pred),
+        pairs.map((pair: Pair<Thing, Thing>) =>
+          new Pair<Thing, Thing>(
+            new Thing(doReplace(pair.l.id)), 
+            new Thing(doReplace(pair.r.id)))));
+    });
+    this.relations = newRelations;
+  }
+
   /**
    * Check if there is a thing with the given id.
    *
