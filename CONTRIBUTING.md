@@ -21,13 +21,14 @@ Scan through our [existing issues](https://github.com/Apollo-Protocol/hqdm-lib/i
 ## Issue Workflow
 * Choose an issue you wish to resolve. Where possible a pull request should correlate to a single issue.
 * Assign yourself to the issue
+* Fork the repository to your account.
 * Create a branch using the pattern [type]/[issue number]-[issue title]. Branching follows [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow).
 * Commit your changes with a suitable commit message.
 * Create/update any tests as appropiate.
 * Run a full build to ensure everything functions as intended.
 * Update any documentation in the repository.
-* Create a pull request to merge your branch into develop, linking issues that will be resolved by merging this branch. _Draft pull requests can be used if you'd like early feedback on a particular aspect._
+* Create a pull request to merge your branch from your fork into the repo's main branch, linking issues that will be resolved by merging this branch. _Draft pull requests can be used if you'd like early feedback on a particular aspect._
 * The pull request will be reviewed by the core team to check for good practice such as usability and code styling. Following any changes and approval, your branch will be merged into main. In alignment with the [Code of Conduct](./CODE_OF_CONDUCT.md) - the community will offer encouragement, support and suggestions towards your proposed development.
 * Delete the branch.
 * Close the issue.
-* Congratulations :tada::tada:
+* Enhancement made. Congratulations! :tada::tada:
