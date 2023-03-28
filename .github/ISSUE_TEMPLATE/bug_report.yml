@@ -9,20 +9,25 @@ body:
     id: description
     attributes:
       label: "Description"
-      description: Please enter an explicit description of your issue
+      description: Please enter a general description of your issue
       placeholder: Short and explicit description of your incident...
     validations:
       required: true
   - type: textarea
-    id: reprod
+    id: actualOutput
     attributes:
-      label: "Reproduction steps"
-      description: Please enter an explicit description of your issue
-      value: |
-        1. Go to '...'
-        2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
+      label: "What output did you expect?"
+      description: Please enter a description of what output you expected
+      placeholder: Description...
+      render: bash
+    validations:
+      required: true
+  - type: textarea
+    id: expectOutput
+    attributes:
+      label: "What output did you get?"
+      description: Please enter a description of what output you recieved instead
+      placeholder: Description...
       render: bash
     validations:
       required: true

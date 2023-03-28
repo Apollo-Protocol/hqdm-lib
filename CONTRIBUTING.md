@@ -6,7 +6,7 @@ This guide provides an overview of the contribution workflow from opening an iss
 
 ## Contributions
 
-When contributing to this repoository, please first discuss any changes you wish to make via an issue, email, or any other method with the owners of this repository before making a change.
+When contributing to this repository, please first discuss any changes you wish to make via an issue, email, or any other method with the owners of this repository before making a change.
 
 To make sure you understand the general project concepts, please read the project [README](README.md). 
 
@@ -21,10 +21,9 @@ Scan through our [existing issues](https://github.com/Apollo-Protocol/hqdm-lib/i
 ## Issue Workflow
 * Choose an issue you wish to resolve. Where possible a pull request should correlate to a single issue.
 * Assign yourself to the issue
-* Fork the repository to your account.
-* Create a branch using the pattern [type]/[issue number]-[issue title]. Branching follows [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow).
+* Fork the repository to your account and follow the [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow) steps.
 * Commit your changes with a suitable commit message.
-* Create/update any tests as appropiate.
+* Create/update any tests as appropriate.
 * Run a full build to ensure everything functions as intended.
 * Update any documentation in the repository.
 * Create a pull request to merge your branch from your fork into the repo's main branch, linking issues that will be resolved by merging this branch. _Draft pull requests can be used if you'd like early feedback on a particular aspect._
