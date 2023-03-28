@@ -81,7 +81,7 @@ export const ENDING = HQDM_NS + 'ending';
  * number. The version is represented in the external RDF as a triple
  * subject HQDM_LIB_REPR and predicate OWL_VERSION.
  */
-const currentReprVersion = "1";
+const currentReprVersion = '1';
 
 /**
  * Predicates to represent in the RDF with literals.
@@ -153,18 +153,18 @@ export class HQDMModel {
       const newFirst = doReplace(first);
       const newPreds = new Map<string, TSet<Thing>>();
       preds.forEach((seconds: TSet<Thing>, pred: string) =>
-        newPreds.set(doReplace(pred), 
+        newPreds.set(doReplace(pred),
           seconds.map((t: Thing) => new Thing(doReplace(t.id)))));
       newThings.set(newFirst, newPreds);
     });
     this.things = newThings;
 
-    const newRelations = new Map<string, TSet<Pair<Thing, Thing>>>;
+    const newRelations = new Map<string, TSet<Pair<Thing, Thing>>>();
     this.relations.forEach((pairs: TSet<Pair<Thing, Thing>>, pred: string) => {
       newRelations.set(doReplace(pred),
         pairs.map((pair: Pair<Thing, Thing>) =>
           new Pair<Thing, Thing>(
-            new Thing(doReplace(pair.l.id)), 
+            new Thing(doReplace(pair.l.id)),
             new Thing(doReplace(pair.r.id)))));
     });
     this.relations = newRelations;
@@ -563,7 +563,7 @@ export class HQDMModel {
     const input = new Readable({
       objectMode: true,
       read: () => {
-        quads.forEach(q => input.push(q));
+        quads.forEach((q) => input.push(q));
         input.push(null);
       },
     });
@@ -682,20 +682,20 @@ export class HQDMModel {
    * @param second the second thing.
    */
   unrelate(predicate: string, first: Thing, second: Thing): void {
-    let predicates = this.things.get(first.id);
+    const predicates = this.things.get(first.id);
     if (!predicates) {
       return;
     }
 
-    let relations = predicates?.get(predicate);
+    const relations = predicates?.get(predicate);
     if (!relations) {
       return;
     }
     relations.remove(second);
 
-    let pairs = this.relations.get(predicate);
+    const pairs = this.relations.get(predicate);
     if (!pairs) {
-      throw new Error(`Internal inconsistency detected!`);
+      throw new Error('Internal inconsistency detected!');
     }
     pairs.remove(new Pair(first, second));
   }
@@ -899,7 +899,7 @@ export class HQDMModel {
     try {
       const quads = parser.parse(ttl);
 
-      let ver = quads
+      const ver = quads
         .find((q: N3.Quad) =>
           q.subject.value === HQDM_LIB_REPR &&
           q.predicate.value === OWL_VERSION)
@@ -907,7 +907,7 @@ export class HQDMModel {
 
       /* For now assume unversioned RDF is the current version */
       if (ver !== undefined && ver !== currentReprVersion) {
-        throw new Error(`RDF uses an unknown data representation`);
+        throw new Error('RDF uses an unknown data representation');
       }
 
       quads.forEach((q) => {
