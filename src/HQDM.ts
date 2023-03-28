@@ -111,6 +111,9 @@ export class HQDMModel {
    * Ensure output files include a given owl:versionInfo triple. This
    * will remove any existing version triple for this subject.
    *
+   * This method may be removed in future. It does not properly belong
+   * in an HQDM data store, but at a lower level.
+   *
    * @param subject The subject IRI of the triple.
    * @param version The version number to write as the object.
    */
@@ -125,6 +128,9 @@ export class HQDMModel {
   /**
    * Check if we have a given owl:versionInfo triple. This may have been
    * created with setVersionInfo or loaded from a file.
+   *
+   * This method may be removed in future. It does not properly belong
+   * in an HQDM data store, but at a lower level.
    *
    * @param subject The subject IRI to look for.
    * @returns The version string found, or undefined.
@@ -144,6 +150,15 @@ export class HQDMModel {
     this.setVersionInfo(HQDM_LIB_NS, HQDM_LIB_VERSION);
   }
 
+  /**
+   * Go through all relations in the datastore and replace one IRI
+   * prefix with another. Changing IRI prefixes known to hqdm-lib may
+   * cause data corruption; this is intended for forward-porting user
+   * object identifiers in situations where IRI prefixes have changed.
+   *
+   * This method may be removed in future. It does not properly belong
+   * in an HQDM data store, but at a lower level.
+   */
   replaceIriPrefix(from: string, to: string) {
     const doReplace = (str: string) =>
       str.startsWith(from) ? str.replace(from, to) : str;
