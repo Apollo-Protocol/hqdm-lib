@@ -607,6 +607,32 @@ export class HQDMModel {
   }
 
   /**
+   * Remove a relation.
+   *
+   * @param predicate the predicate of the relation.
+   * @param first the first thing in the relationship.
+   * @param second the second thing.
+   */
+  unrelate(predicate: string, first: Thing, second: Thing): void {
+    let predicates = this.things.get(first.id);
+    if (!predicates) {
+      return;
+    }
+
+    let relations = predicates?.get(predicate);
+    if (!relations) {
+      return;
+    }
+    relations.remove(second);
+
+    let pairs = this.relations.get(predicate);
+    if (!pairs) {
+      throw new Error(`Internal inconsistency detected!`);
+    }
+    pairs.remove(new Pair(first, second));
+  }
+
+  /**
    * Check if two things are related by a predicate.
    *
    * @param predicate the predicate to check.
