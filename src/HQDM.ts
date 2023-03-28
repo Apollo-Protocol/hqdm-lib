@@ -5,6 +5,7 @@ import * as N3 from 'n3';
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { Readable } from 'readable-stream';
 import SerializerJsonld from '@rdfjs/serializer-jsonld';
+import { HQDM_LIB_VERSION } from './version.js';
 
 const { DataFactory } = N3;
 const { namedNode, literal, defaultGraph, quad } = DataFactory;
@@ -50,7 +51,10 @@ export class Pair<L extends Eq<L>, R extends Eq<R>> implements Eq<Pair<L, R>> {
 }
 
 // Usefule constants for the HQDM ontology.
+export const APOLLO_NS = 'https://apollo-protocol.github.io/ns';
 export const HQDM_NS = 'https://hqdmtop.github.io/hqdm#';
+export const HQDM_LIB_NS = `${APOLLO_NS}/2023/hqdm-lib`;
+export const HQDM_LIB_REPR = `${HQDM_LIB_NS}#rdf-representation`;
 export const ENTITY_NAME = HQDM_NS + 'data_EntityName';
 export const CONSISTS_OF = HQDM_NS + 'consists_of';
 export const CONSISTS_OF_ = HQDM_NS + 'consists_of_';
@@ -64,11 +68,28 @@ export const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 export const MEMBER_OF = HQDM_NS + 'member_of';
 export const MEMBER_OF_ = HQDM_NS + 'member_of_';
 export const MEMBER_OF_KIND = HQDM_NS + 'member_of_kind';
+export const OWL_VERSION = 'http://www.w3.org/2002/07/owl#versionInfo';
 export const PART_OF_POSSIBLE_WORLD = HQDM_NS + 'part_of_possible_world';
 export const TEMPORAL_PART_OF = HQDM_NS + 'temporal_part_of';
 export const PARTICIPANT_IN = HQDM_NS + 'participant_in';
 export const BEGINNING = HQDM_NS + 'beginning';
 export const ENDING = HQDM_NS + 'ending';
+
+/**
+ * This specifies a version for the mapping from the HQDM data model to
+ * RDF. Any change to the representation must increment this version
+ * number. The version is represented in the external RDF as a triple
+ * subject HQDM_LIB_REPR and predicate OWL_VERSION.
+ */
+const currentReprVersion = "1";
+
+/**
+ * Predicates to represent in the RDF with literals.
+ */
+const literalPredicates = new Set([
+  ENTITY_NAME,
+  OWL_VERSION,
+]);
 
 /**
  * This is a class that represents the HQDM ontology and provides methods to access and update it.
@@ -83,6 +104,44 @@ export class HQDMModel {
   constructor() {
     this.things = new Map();
     this.relations = new Map();
+    this.setOurVersionInfo();
+  }
+
+  /**
+   * Ensure output files include a given owl:versionInfo triple. This
+   * will remove any existing version triple for this subject.
+   *
+   * @param subject The subject IRI of the triple.
+   * @param version The version number to write as the object.
+   */
+  setVersionInfo(subject: string, version: string) {
+    const s_th = new Thing(subject);
+    const v_th = new Thing(version);
+    this._getRelated(s_th, OWL_VERSION)
+      .forEach((v: Thing) => this.unrelate(OWL_VERSION, s_th, v));
+    this.relate(OWL_VERSION, s_th, v_th);
+  }
+
+  /**
+   * Check if we have a given owl:versionInfo triple. This may have been
+   * created with setVersionInfo or loaded from a file.
+   *
+   * @param subject The subject IRI to look for.
+   * @returns The version string found, or undefined.
+   */
+  getVersionInfo(subject: string) {
+    return this._getRelated(new Thing(subject), OWL_VERSION)
+      .first()?.id;
+  }
+
+  /**
+   * Set the hqdm-lib version info. Currently this sets the HQDM RDF
+   * representation version for forward-compat and the version of
+   * hqdm-lib just for debugging/interest.
+   */
+  setOurVersionInfo() {
+    this.setVersionInfo(HQDM_LIB_REPR, currentReprVersion);
+    this.setVersionInfo(HQDM_LIB_NS, HQDM_LIB_VERSION);
   }
 
   /**
@@ -432,30 +491,17 @@ export class HQDMModel {
     const writer = new N3.Writer(n3Options);
 
     this.relations.forEach((pairs, predicate) => {
-      // Store ENTITY_NAME values as literals and everything else as named nodes.
-      if (predicate === ENTITY_NAME) {
-        pairs.forEach((p) =>
-          writer.addQuad(
-            quad(
-              namedNode(p.l.id),
-              namedNode(predicate),
-              literal(p.r.id),
-              defaultGraph()
-            )
+      const lit = literalPredicates.has(predicate);
+      pairs.forEach((p) =>
+        writer.addQuad(
+          quad(
+            namedNode(p.l.id),
+            namedNode(predicate),
+            lit ? literal(p.r.id) : namedNode(p.r.id),
+            defaultGraph()
           )
-        );
-      } else {
-        pairs.forEach((p) => {
-          writer.addQuad(
-            quad(
-              namedNode(p.l.id),
-              namedNode(predicate),
-              namedNode(p.r.id),
-              defaultGraph()
-            )
-          );
-        });
-      }
+        )
+      );
     });
     let result = '';
     writer.end((_error, res) => (result = res as string));
@@ -471,30 +517,17 @@ export class HQDMModel {
       objectMode: true,
       read: () => {
         this.relations.forEach((pairs, predicate) => {
-          // Store ENTITY_NAME values as literals and everything else as named nodes.
-          if (predicate === ENTITY_NAME) {
-            pairs.forEach((p) =>
-              input.push(
-                quad(
-                  namedNode(p.l.id),
-                  namedNode(predicate),
-                  literal(p.r.id),
-                  defaultGraph()
-                )
+          const lit = literalPredicates.has(predicate);
+          pairs.forEach((p) =>
+            input.push(
+              quad(
+                namedNode(p.l.id),
+                namedNode(predicate),
+                lit ? literal(p.r.id) : namedNode(p.r.id),
+                defaultGraph()
               )
-            );
-          } else {
-            pairs.forEach((p) => {
-              input.push(
-                quad(
-                  namedNode(p.l.id),
-                  namedNode(predicate),
-                  namedNode(p.r.id),
-                  defaultGraph()
-                )
-              );
-            });
-          }
+            )
+          );
         });
         input.push(null);
       },
@@ -831,6 +864,17 @@ export class HQDMModel {
     try {
       const quads = parser.parse(ttl);
 
+      let ver = quads
+        .find((q: N3.Quad) =>
+          q.subject.value === HQDM_LIB_REPR &&
+          q.predicate.value === OWL_VERSION)
+        ?.object?.value;
+
+      /* For now assume unversioned RDF is the current version */
+      if (ver !== undefined && ver !== currentReprVersion) {
+        throw new Error(`RDF uses an unknown data representation`);
+      }
+
       quads.forEach((q) => {
         const s = new Thing(q.subject.id);
         const p = q.predicate.id;
@@ -845,6 +889,7 @@ export class HQDMModel {
       return e as Error;
     }
 
+    result.setOurVersionInfo();
     return result;
   }
 }

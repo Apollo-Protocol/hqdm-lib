@@ -6,6 +6,7 @@ node_modules
 *.swp
 
 src/Scratch*
+src/version.ts
 dist
 .vscode/
 coverage/
