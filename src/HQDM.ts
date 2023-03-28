@@ -508,6 +508,36 @@ export class HQDMModel {
   }
 
   /**
+   * Build a sorted list of quads to write out.
+   *
+   * @returns an array of Quads.
+   */
+  generateQuads(): N3.Quad[] {
+    const out: N3.Quad[] = [];
+
+    this.relations.forEach((pairs, predicate) => {
+      const lit = literalPredicates.has(predicate);
+      pairs.forEach((p) =>
+        out.push(quad(
+          namedNode(p.l.id),
+          namedNode(predicate),
+          lit ? literal(p.r.id) : namedNode(p.r.id),
+          defaultGraph())));
+    });
+
+    const cmp = (a: string, b: string) => a < b ? -1 : a > b ? 1 : 0;
+    const cmpterm = (a: N3.Term, b: N3.Term) =>
+      cmp(a.termType, b.termType) || cmp(a.value, b.value);
+
+    out.sort((a: N3.Quad, b: N3.Quad) =>
+      cmpterm(a.subject, b.subject)
+      || cmpterm(a.predicate, b.predicate)
+      || cmpterm(a.object, b.object));
+
+    return out;
+  }
+
+  /**
    * Save the model to a string in the format defined by the n3Options, defaults to TTL.
    *
    * @param n3Options the options for the N3 writer.
@@ -515,20 +545,9 @@ export class HQDMModel {
    */
   save(n3Options: object): string {
     const writer = new N3.Writer(n3Options);
+    const quads = this.generateQuads();
 
-    this.relations.forEach((pairs, predicate) => {
-      const lit = literalPredicates.has(predicate);
-      pairs.forEach((p) =>
-        writer.addQuad(
-          quad(
-            namedNode(p.l.id),
-            namedNode(predicate),
-            lit ? literal(p.r.id) : namedNode(p.r.id),
-            defaultGraph()
-          )
-        )
-      );
-    });
+    writer.addQuads(quads);
     let result = '';
     writer.end((_error, res) => (result = res as string));
     return result;
@@ -539,22 +558,12 @@ export class HQDMModel {
    */
   saveJSONLD(f: (...args: any[]) => void): void {
     const serializerJsonld = new SerializerJsonld();
+    const quads = this.generateQuads();
+
     const input = new Readable({
       objectMode: true,
       read: () => {
-        this.relations.forEach((pairs, predicate) => {
-          const lit = literalPredicates.has(predicate);
-          pairs.forEach((p) =>
-            input.push(
-              quad(
-                namedNode(p.l.id),
-                namedNode(predicate),
-                lit ? literal(p.r.id) : namedNode(p.r.id),
-                defaultGraph()
-              )
-            )
-          );
-        });
+        quads.forEach(q => input.push(q));
         input.push(null);
       },
     });
