@@ -48,6 +48,7 @@
     "prebuild":  "node -p \"'export const HQDM_LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "tsc",
     "doc": "typedoc src/*.ts",
+    "prelint": "npm run prebuild",
     "lint": "eslint . --ext .ts",
     "prepare": "npm test"
   },
