@@ -21,7 +21,7 @@ Scan through our [existing issues](https://github.com/Apollo-Protocol/hqdm-lib/i
 ## Issue Workflow
 * Choose an issue you wish to resolve. Where possible a pull request should correlate to a single issue.
 * Assign yourself to the issue
-* Fork the repository to your account and follow the [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow) steps.
+* Fork the repository to your account.
 * Commit your changes with a suitable commit message.
 * Create/update any tests as appropriate.
 * Run a full build to ensure everything functions as intended.
