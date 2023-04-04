@@ -56,7 +56,7 @@
     "name": "Apollo Protocol",
     "url": "https://github.com/Apollo-Protocol"
   },
-  "license": "LICENSE",
+  "license": "Apache-2.0",
   "type": "module",
   "repository": {
     "type": "git",
