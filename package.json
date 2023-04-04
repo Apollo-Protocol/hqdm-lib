@@ -1,6 +1,6 @@
 {
   "name": "@apollo-protocol/hqdm-lib",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An implementation of the HQDM ontology in TypeScript",
   "types": "dist/index.d.ts",
   "exports": {
