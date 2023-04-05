@@ -21,8 +21,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Tests
-      working-directory: ./editor-app
+    - name: Test
       run: |
         npm i yarn
         yarn test
