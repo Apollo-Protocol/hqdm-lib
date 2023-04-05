@@ -24,4 +24,5 @@ jobs:
     - name: Test
       run: |
         npm i yarn
+        yarn install
         yarn test
