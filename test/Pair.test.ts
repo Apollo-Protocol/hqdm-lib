@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
-import { Pair, Thing } from '../src/HQDM';
+import { Pair, Thing } from '../src/HQDM.js';
 
 describe('Pair', () => {
   it('Can compare two pairs for equality', () => {

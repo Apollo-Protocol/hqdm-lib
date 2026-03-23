@@ -28,7 +28,7 @@ export class TSet<T extends Eq<T>> implements Iterable<T> {
    *
    * @returns An iterator for the underlying data.
    */
-  [Symbol.iterator](): Iterator<T, any, undefined> {
+  [Symbol.iterator](): Iterator<T, unknown, undefined> {
     return this._data[Symbol.iterator]();
   }
 

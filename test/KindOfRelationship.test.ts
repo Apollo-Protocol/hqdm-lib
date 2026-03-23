@@ -9,7 +9,7 @@ import {
   kind_of_relationship_with_signature,
   MEMBER_OF_KIND,
   role,
-} from '../src/HQDM';
+} from '../src/HQDM.js';
 
 const BASE = 'https://www.test.co.uk/test#';
 

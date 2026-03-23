@@ -17,7 +17,7 @@ import {
   Thing,
   utcMillisecondsClass,
   utcPointInTimeIri,
-} from '../src/HQDM';
+} from '../src/HQDM.js';
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 
 const BASE = 'test:';

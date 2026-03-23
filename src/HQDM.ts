@@ -571,7 +571,7 @@ export class HQDMModel {
   /**
    * Save as JSON-LD - Experimental.
    */
-  saveJSONLD(f: (...args: any[]) => void): void {
+  saveJSONLD(f: (...args: unknown[]) => void): void {
     const serializerJsonld = new SerializerJsonld();
     const quads = this.generateQuads();
 

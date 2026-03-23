@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { expect } from 'chai';
-import { Pair, Thing } from '../src/HQDM';
-import { TSet } from '../src/TSet';
+import { Pair, Thing } from '../src/HQDM.js';
+import { TSet } from '../src/TSet.js';
 
 describe('TSet', () => {
   it('Can behave as a Set of Things', () => {
