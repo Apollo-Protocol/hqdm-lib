@@ -40,7 +40,7 @@
     "@rdfjs/serializer-jsonld": "^2.0.1",
     "n3": "^1.16.3",
     "readable-stream": "^4.7.0",
-    "uuid": "^13.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@tsconfig/node18-strictest": "^1.0.0",
